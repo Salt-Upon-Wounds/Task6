@@ -54,9 +54,9 @@ namespace Task6.Controllers
                 recipient = await userService.GetByNameAsync(username);
             }
 
-            await userService.CreateMessage(user, recipient, title, text);
+            int id = await userService.CreateMessage(user, recipient, title, text);
 
-            return Content("success");
+            return Content(id.ToString());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

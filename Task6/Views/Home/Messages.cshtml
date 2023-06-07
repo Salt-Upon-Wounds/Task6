@@ -13,18 +13,18 @@
               data-ajax-url="/Home/SendMessage"
               data-ajax-loading="#loading"
               data-ajax-mode="replace"
-              data-ajax-update="#updateDiv">
+              data-ajax-complete="notifyOthers">
             <div class="form-floating mb-2">
                 <input type="text" name="title" class="form-control" aria-required="true" id="title" />
-                <label for="title" class="form-label">title</label>
+                <label for="title" class="form-label">Title</label>
             </div>
                 <div class="form-floating mb-2">
                 <input type="text" name="text" class="form-control" aria-required="true" id="text" />
-                <label for="text" class="form-label">text</label>
+                <label for="text" class="form-label">Text</label>
             </div>
             <div class="form-floating mb-2">
                 <input type="text" name="username" class="form-control" aria-required="true" id="username" />
-                <label for="username" class="form-label">username</label>
+                <label for="username" class="form-label">Username</label>
             </div>
             <div>
                 <button id="send" type="submit" class="w-100 btn btn-lg btn-primary">Send Message</button>
@@ -38,7 +38,7 @@
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse{item.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse{item.Id}")">
-                <b><span>@($"[{item.SentAt}]") Author: </span></b><span>@($"{item.Sender.Name}") </span><span><b>Title: </b>@($"{item.Title}")</span>
+                <b><span>@($"[{item.SentAt}]") Author: </span></b><span>@($"{item.Sender.Name}") </span><span><b> Title: </b>@($"{item.Title}")</span>
             </button>
         </h2>
         <div id="@($"flush-collapse{item.Id}")" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
@@ -54,18 +54,26 @@
             .withUrl("/chat")
             .build();
 
-        // "login-submit"
-        document.getElementById("send").addEventListener("click", function () {
-            const product = "ASDDSA";
-
-            hubConnection.invoke("SendMessage", "asd",product)
+        function notifyOthers(xhr) {
+            hubConnection.invoke("SendMessage", document.getElementById("username").value, xhr.responseText)
                 .catch(function (err) {
                     return console.error(err.toString());
                 });
-        });
+        }
 
-        hubConnection.on("Receive", function (message) {
-            $(`<p>Test ${message}</p>`).prependTo("#container");
+        hubConnection.on("Receive", function (id, title, text, sentAt, sender) {
+            $(`
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${id}" aria-expanded="false" aria-controls="flush-collapse${id}">
+                        <b><span>[${sentAt}] Author: </span></b><span>${sender} </span><span><b> Title: </b>${title}</span>
+                    </button>
+                </h2>
+                <div id="flush-collapse${id}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                    <p style="margin-left: 10px">${text}</p>
+                </div>
+            </div>
+            `).prependTo("#container");
         });
 
 

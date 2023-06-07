@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Task6.Models;
+using Task6.Services;
+
 
 namespace Task6.Hubs
 {
@@ -73,13 +74,16 @@ namespace Task6.Hubs
     {
         private readonly static ConnectionMapping<string> _connections =
             new ConnectionMapping<string>();
-        public void SendMessage(string who, string message)
+
+        public void SendMessage(string who, string id, [FromServices] IUserService userService)
         {
             string name = Context.GetHttpContext().Request.Cookies["name"];
 
+            var message = userService.GetMessageById(int.Parse(id));
+
             foreach (var connectionId in _connections.GetConnections(who))
             {
-                Clients.Client(connectionId).SendAsync("Receive", message);
+                Clients.Client(connectionId).SendAsync("Receive", message.Id, message.Title, message.Text, message.SentAt.ToString("G"), name);
             }
         }
 
