@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using Task6.Models;
 using Task6.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Task6.Controllers
 {
@@ -57,6 +59,13 @@ namespace Task6.Controllers
             int id = await userService.CreateMessage(user, recipient, title, text);
 
             return Content(id.ToString());
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Autocomplete(string? substring)
+        {
+            var users = (await userService.FindByNameAsync(substring)).Select(x=>x.Name).ToList();
+            return Json(users);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

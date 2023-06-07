@@ -8,7 +8,7 @@ namespace Task6.Services
         public List<UserModel> GetUsers();
         public Task CreateUser(string name);
         Task<UserModel> GetByNameAsync(string name);
-        Task<IEnumerable<UserModel>> FindByNameAsync(string substring);
+        Task<IEnumerable<UserModel>> FindByNameAsync(string? substring);
         Task<int> CreateMessage(UserModel sender, UserModel recipient, string title, string text);
         List<MessageModel> GetUserMessages(UserModel user);
         MessageModel GetMessageById(int id);
@@ -44,8 +44,14 @@ namespace Task6.Services
         public async Task<UserModel> GetByNameAsync(string name) =>
             await db.Users.FirstOrDefaultAsync(x => string.Equals(x.Name, name));
 
-        public async Task<IEnumerable<UserModel>> FindByNameAsync(string substring) =>
-            await db.Users.Where(x => x.Name.Contains(substring)).ToListAsync();
+        public async Task<IEnumerable<UserModel>> FindByNameAsync(string? substring)
+        {
+            if (substring is null)
+            {
+                return await db.Users.Take(10).ToListAsync();
+            }
+            return await db.Users.Where(x => x.Name.Contains(substring)).Take(10).ToListAsync();
+        }
         public async Task<int> CreateMessage(UserModel sender, UserModel recipient,  string title, string text)
         {
             var message = new MessageModel { Title = title, Text = text, Sender = sender, Recipient = recipient, SentAt = DateTime.UtcNow };

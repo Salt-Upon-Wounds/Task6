@@ -19,8 +19,7 @@
                 <label for="title" class="form-label">Title</label>
             </div>
                 <div class="form-floating mb-2">
-                <input type="text" name="text" class="form-control" aria-required="true" id="text" />
-                <label for="text" class="form-label">Text</label>
+                <textarea name="text" class="form-control" aria-required="true" id="text" placeholder="Text"></textarea>
             </div>
             <div class="form-floating mb-2">
                 <input type="text" name="username" class="form-control" aria-required="true" id="username" />
@@ -50,6 +49,13 @@
 
 @section scripts{
     <script type="text/javascript">
+        $(function () {
+            $('#username').autocomplete({
+                source: '/Home/Autocomplete',
+                minLength: 0
+            });
+        });
+
         const hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/chat")
             .build();
