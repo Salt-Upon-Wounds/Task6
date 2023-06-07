@@ -4,7 +4,7 @@
     ViewData["Title"] = "Messages";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center mb-2">
     <h1>Hi @Context.Session.GetString("name")</h1>
     <div class="col-md-4">
         <form asp-action="SendMessage" method="post" 
@@ -32,7 +32,8 @@
         </form>
     </div>
 </div>
-@foreach(var item in Model)
+<div id="container">
+@foreach(var item in Model.Reverse())
 {
     <div class="accordion-item">
         <h2 class="accordion-header">
@@ -45,35 +46,36 @@
         </div>
     </div>
 }
+</div>
+
 @section scripts{
     <script type="text/javascript">
-        //Here is the custom javascript just for this view.
+        const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/chat")
+            .build();
+
+        // "login-submit"
+        document.getElementById("send").addEventListener("click", function () {
+            const product = "ASDDSA";
+
+            hubConnection.invoke("SendMessage", "asd",product)
+                .catch(function (err) {
+                    return console.error(err.toString());
+                });
+        });
+
+        hubConnection.on("Receive", function (message) {
+            $(`<p>Test ${message}</p>`).prependTo("#container");
+        });
+
+
+        hubConnection.start()
+            .then(function () {
+                document.getElementById("send").disabled = false;
+            })
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
+
     </script>
 }
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>*@

@@ -27,7 +27,7 @@ namespace Task6.Controllers
         public async Task<IActionResult> Index(UserModel model)
         {
             if (model is null || model.Name.IsNullOrEmpty()) return View();
-
+            
             var user = await userService.GetByNameAsync(model.Name);
 
             if (user is null)
@@ -38,6 +38,7 @@ namespace Task6.Controllers
 
             HttpContext.Session.SetString("name", user.Name);
             var messages = userService.GetUserMessages(user);
+            HttpContext.Response.Cookies.Append("name", user.Name);
 
             return View("Messages", messages);
         }
