@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Task6.Models.MessageModel>
+
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<div class="row justify-content-center">
+    <h1>Hi @Context.Session.GetString("name")</h1>
+    <div class="col-md-4">
+        <form asp-action="SendMessage" method="post" 
+              data-ajax="true"
+              data-ajax-method="post"
+              data-ajax-url="/Home/SendMessage"
+              data-ajax-loading="#loading"
+              data-ajax-mode="replace"
+              data-ajax-update="#updateDiv">
+            <div class="form-floating mb-2">
+                <input type="text" name="title" class="form-control" aria-required="true" id="title" />
+                <label for="title" class="form-label">title</label>
+            </div>
+                <div class="form-floating mb-2">
+                <input type="text" name="text" class="form-control" aria-required="true" id="text" />
+                <label for="text" class="form-label">text</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" name="username" class="form-control" aria-required="true" id="username" />
+                <label for="username" class="form-label">username</label>
+            </div>
+            <div>
+                <button id="send" type="submit" class="w-100 btn btn-lg btn-primary">Send Message</button>
+            </div>
+        </form>
+    </div>
+</div>
+@foreach(var item in Model)
+{
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#flush-collapse{item.Id}")" aria-expanded="false" aria-controls="@($"flush-collapse{item.Id}")">
+                <b><span>@($"[{item.SentAt}]") Author: </span></b><span>@($"{item.Sender.Name}") </span><span><b>Title: </b>@($"{item.Title}")</span>
+            </button>
+        </h2>
+        <div id="@($"flush-collapse{item.Id}")" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+            <p style="margin-left: 10px">@item.Text</p>
+        </div>
+    </div>
+}
+@section scripts{
+    <script type="text/javascript">
+        //Here is the custom javascript just for this view.
+    </script>
+}
+@*<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>*@
